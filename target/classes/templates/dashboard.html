@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{::main}, 'Dashboard')}">
+<body><main>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard</h2>
+        <span class="text-muted">Bun venit, <strong th:text="${user.fullName}">Utilizator</strong>!</span>
+    </div>
+
+    <!-- Conturi -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4" th:each="account : ${accounts}">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1 small" th:text="${account.name}">Cont</p>
+                    <h5 class="mb-0"
+                        th:text="${#numbers.formatDecimal(account.balance, 1, 'COMMA', 2, 'POINT') + ' ' + account.currency}"
+                        th:classappend="${account.balance.signum() < 0 ? 'text-danger' : 'text-success'}">
+                    </h5>
+                    <small class="text-muted" th:text="${account.type}">TIP</small>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(accounts)}" class="col-12">
+            <div class="alert alert-info">
+                Nu ai niciun cont. <a th:href="@{/accounts/new}">Creeaza primul cont</a>.
+            </div>
+        </div>
+    </div>
+
+    <!-- Bugete -->
+    <div class="row g-3 mb-4" th:if="${!#maps.isEmpty(budgetProgress)}">
+        <div class="col-12">
+            <h5><i class="bi bi-bar-chart me-2 text-primary"></i>Bugete luna curenta</h5>
+        </div>
+        <div class="col-md-6" th:each="entry : ${budgetProgress}">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span th:text="${entry.key.category.name}">Categorie</span>
+                        <small class="text-muted">
+                            <span th:text="${entry.value}">0</span>%
+                            din <span th:text="${#numbers.formatDecimal(entry.key.limitAmount, 1, 2)}">0</span> RON
+                        </small>
+                    </div>
+                    <div class="progress" style="height:8px;">
+                        <div class="progress-bar"
+                             th:style="'width:' + ${entry.value} + '%'"
+                             th:classappend="${entry.value >= 90 ? 'bg-danger' : entry.value >= 70 ? 'bg-warning' : 'bg-success'}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tranzactii recente -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Ultimele tranzactii</h6>
+            <a th:href="@{/transactions}" class="btn btn-sm btn-outline-primary">Vezi toate</a>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0" th:if="${!#lists.isEmpty(recentTransactions)}">
+                <thead class="table-light">
+                <tr><th>Data</th><th>Descriere</th><th>Categorie</th><th>Suma</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="t : ${recentTransactions}">
+                    <td th:text="${#temporals.format(t.transactionDate, 'dd.MM.yyyy')}">-</td>
+                    <td th:text="${t.description ?: '-'}">-</td>
+                    <td><span class="badge bg-secondary" th:text="${t.category.name}">-</span></td>
+                    <td th:classappend="${t.category.type.name() == 'INCOME' ? 'text-success fw-bold' : 'text-danger fw-bold'}"
+                        th:text="${(t.category.type.name() == 'INCOME' ? '+' : '-') + #numbers.formatDecimal(t.amount, 1, 2) + ' RON'}">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${#lists.isEmpty(recentTransactions)}" class="p-3 text-center text-muted">
+                Nicio tranzactie. <a th:href="@{/transactions/new}">Adauga prima!</a>
+            </div>
+        </div>
+    </div>
+
+</main></body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, 'Conturi')}">
+<body><main>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-credit-card me-2 text-primary"></i>Conturi</h2>
+    <a th:href="@{/accounts/new}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Cont nou
+    </a>
+</div>
+
+<div class="row g-3" th:if="${accounts.totalElements > 0}">
+    <div class="col-md-4" th:each="acc : ${accounts}">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title" th:text="${acc.name}">Cont</h6>
+                        <span class="badge bg-light text-dark border" th:text="${acc.type}">TIP</span>
+                    </div>
+                    <div class="text-end">
+                        <h5 th:text="${#numbers.formatDecimal(acc.balance, 1, 'COMMA', 2, 'POINT') + ' ' + acc.currency}"
+                            th:classappend="${acc.balance.signum() < 0 ? 'text-danger' : 'text-success'}">
+                            0.00 RON
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0 pt-0">
+                <a th:href="@{/accounts/{id}/edit(id=${acc.id})}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-pencil me-1"></i>Editeaza
+                </a>
+                <form th:action="@{/accounts/{id}/delete(id=${acc.id})}" method="post" class="d-inline"
+                      onsubmit="return confirm('Stergi contul si toate tranzactiile asociate?')">
+                    <button class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash me-1"></i>Sterge
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:if="${accounts.totalElements == 0}" class="text-center py-5 text-muted">
+    <i class="bi bi-credit-card fs-1 d-block mb-3"></i>
+    Nu ai niciun cont. <a th:href="@{/accounts/new}">Creeaza primul cont!</a>
+</div>
+
+<!-- Paginare -->
+<nav class="mt-4" th:if="${totalPages > 1}">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+            <a class="page-link" th:href="@{/accounts(page=${currentPage - 1}, sortBy=${sortBy}, sortDir=${sortDir})}">&laquo;</a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+            th:classappend="${i == currentPage ? 'active' : ''}">
+            <a class="page-link" th:text="${i + 1}"
+               th:href="@{/accounts(page=${i}, sortBy=${sortBy}, sortDir=${sortDir})}">1</a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+            <a class="page-link" th:href="@{/accounts(page=${currentPage + 1}, sortBy=${sortBy}, sortDir=${sortDir})}">&raquo;</a>
+        </li>
+    </ul>
+</nav>
+
+</main></body>
+</html>

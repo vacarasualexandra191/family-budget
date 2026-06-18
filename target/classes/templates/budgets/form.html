@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, 'Buget')}">
+<body><main>
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-bar-chart me-2 text-primary"></i>
+                    <span th:text="${budgetForm.id != null ? 'Editeaza buget' : 'Buget nou'}">Buget</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <form th:action="${budgetForm.id != null ? '/budgets/' + budgetForm.id + '/edit' : '/budgets/new'}"
+                      method="post" th:object="${budgetForm}" novalidate class="needs-validation">
+
+                    <div class="mb-3">
+                        <label class="form-label">Categoria *</label>
+                        <select th:field="*{categoryId}"
+                                th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'"
+                                class="form-select" required>
+                            <option value="">-- Selecteaza --</option>
+                            <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{categoryId}">Selecteaza o categorie</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Suma limita (RON) *</label>
+                        <input type="number" step="0.01" min="1" th:field="*{limitAmount}"
+                               th:classappend="${#fields.hasErrors('limitAmount')} ? 'is-invalid'"
+                               class="form-control" required/>
+                        <div class="invalid-feedback" th:errors="*{limitAmount}">Suma invalida</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Luna (1-12) *</label>
+                            <input type="number" min="1" max="12" th:field="*{month}"
+                                   th:classappend="${#fields.hasErrors('month')} ? 'is-invalid'"
+                                   class="form-control" required/>
+                            <div class="invalid-feedback" th:errors="*{month}">Luna invalida</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Anul *</label>
+                            <input type="number" min="2000" th:field="*{year}"
+                                   th:classappend="${#fields.hasErrors('year')} ? 'is-invalid'"
+                                   class="form-control" required/>
+                            <div class="invalid-feedback" th:errors="*{year}">Anul invalid</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Salveaza
+                        </button>
+                        <a th:href="@{/budgets}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-1"></i>Anuleaza
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function() {
+    document.querySelectorAll('.needs-validation').forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) { event.preventDefault(); event.stopPropagation(); }
+            form.classList.add('was-validated');
+        });
+    });
+})();
+</script>
+</main></body>
+</html>

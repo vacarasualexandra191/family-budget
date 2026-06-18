@@ -1,0 +1,3 @@
+com\familybudget\integration\FamilyBudgetIntegrationTest.class
+com\familybudget\service\TransactionServiceTest.class
+com\familybudget\service\BudgetServiceTest.class

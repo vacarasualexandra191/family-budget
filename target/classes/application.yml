@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: family-budget-app
+  profiles:
+    active: dev
+  thymeleaf:
+    cache: false
+    encoding: UTF-8
+
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false  # Folosim paginile noastre custom de eroare
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  config: classpath:logback-spring.xml

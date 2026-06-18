@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, 'Tranzactii')}">
+<body><main>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-arrow-left-right me-2 text-primary"></i>Tranzactii</h2>
+    <a th:href="@{/transactions/new}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Tranzactie noua
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" th:if="${transactions.totalElements > 0}">
+            <thead class="table-light">
+            <tr>
+                <th>
+                    <a th:href="@{/transactions(page=${currentPage}, size=15, sortBy='transactionDate', sortDir=${sortBy == 'transactionDate' ? reverseSortDir : 'desc'})}"
+                       class="text-decoration-none text-dark">
+                        Data
+                        <i th:if="${sortBy == 'transactionDate'}"
+                           th:class="${sortDir == 'asc' ? 'bi bi-sort-up' : 'bi bi-sort-down'}"></i>
+                    </a>
+                </th>
+                <th>Descriere</th>
+                <th>Categorie</th>
+                <th>Cont</th>
+                <th>
+                    <a th:href="@{/transactions(page=${currentPage}, size=15, sortBy='amount', sortDir=${sortBy == 'amount' ? reverseSortDir : 'desc'})}"
+                       class="text-decoration-none text-dark">
+                        Suma
+                        <i th:if="${sortBy == 'amount'}"
+                           th:class="${sortDir == 'asc' ? 'bi bi-sort-up' : 'bi bi-sort-down'}"></i>
+                    </a>
+                </th>
+                <th class="text-end">Actiuni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="t : ${transactions}">
+                <td th:text="${#temporals.format(t.transactionDate, 'dd.MM.yyyy')}">-</td>
+                <td th:text="${t.description ?: '-'}">-</td>
+                <td><span class="badge bg-secondary" th:text="${t.category.name}">-</span></td>
+                <td th:text="${t.account.name}">-</td>
+                <td th:classappend="${t.category.type.name() == 'INCOME' ? 'text-success fw-bold' : 'text-danger fw-bold'}"
+                    th:text="${(t.category.type.name() == 'INCOME' ? '+' : '-') + #numbers.formatDecimal(t.amount, 1, 2) + ' RON'}">
+                </td>
+                <td class="text-end">
+                    <a th:href="@{/transactions/{id}/edit(id=${t.id})}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <form th:action="@{/transactions/{id}/delete(id=${t.id})}" method="post" class="d-inline"
+                          onsubmit="return confirm('Stergi tranzactia?')">
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:if="${transactions.totalElements == 0}" class="p-4 text-center text-muted">
+            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+            Nicio tranzactie. <a th:href="@{/transactions/new}">Adauga prima!</a>
+        </div>
+    </div>
+
+    <!-- Paginare -->
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center"
+         th:if="${totalPages > 1}">
+        <span class="text-muted small">
+            Pagina <span th:text="${currentPage + 1}">1</span> din
+            <span th:text="${totalPages}">1</span>
+        </span>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a class="page-link"
+                       th:href="@{/transactions(page=${currentPage - 1}, size=15, sortBy=${sortBy}, sortDir=${sortDir})}">
+                        &laquo;
+                    </a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage ? 'active' : ''}">
+                    <a class="page-link" th:text="${i + 1}"
+                       th:href="@{/transactions(page=${i}, size=15, sortBy=${sortBy}, sortDir=${sortDir})}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                    <a class="page-link"
+                       th:href="@{/transactions(page=${currentPage + 1}, size=15, sortBy=${sortBy}, sortDir=${sortDir})}">
+                        &raquo;
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+</main></body>
+</html>

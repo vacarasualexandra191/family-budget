@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, 'Bugete')}">
+<body><main>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-bar-chart me-2 text-primary"></i>Bugete</h2>
+        <a th:href="@{/budgets/new}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Buget nou
+        </a>
+    </div>
+
+    <div class="row g-3" th:if="${budgets != null and budgets.totalElements > 0}">
+        <div class="col-md-6" th:each="entry : ${budgetProgress}">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <div>
+                            <h6 class="mb-0" th:text="${entry.key.category.name}">Categorie</h6>
+                            <small class="text-muted"
+                                   th:text="${entry.key.month + '/' + entry.key.year}">Luna/An</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold" th:text="${entry.value + '%'}">0%</span>
+                            <br/>
+                            <small class="text-muted"
+                                   th:text="'din ' + ${#numbers.formatDecimal(entry.key.limitAmount, 1, 2)} + ' RON'">
+                            </small>
+                        </div>
+                    </div>
+                    <div class="progress mb-2" style="height:10px;">
+                        <div class="progress-bar"
+                             th:style="'width:' + ${entry.value} + '%'"
+                             th:classappend="${entry.value >= 90 ? 'bg-danger' : entry.value >= 70 ? 'bg-warning' : 'bg-success'}">
+                        </div>
+                    </div>
+                    <div class="d-flex gap-1">
+                        <a th:href="@{/budgets/{id}/edit(id=${entry.key.id})}"
+                           class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form th:action="@{/budgets/{id}/delete(id=${entry.key.id})}" method="post"
+                              class="d-inline" onsubmit="return confirm('Stergi bugetul?')">
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${budgets == null or budgets.totalElements == 0}" class="text-center py-5 text-muted">
+        <i class="bi bi-bar-chart fs-1 d-block mb-3"></i>
+        Niciun buget. <a th:href="@{/budgets/new}">Creeaza primul!</a>
+    </div>
+
+    <nav class="mt-4" th:if="${totalPages != null and totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{/budgets(page=${currentPage - 1})}">&laquo;</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage ? 'active' : ''}">
+                <a class="page-link" th:text="${i + 1}" th:href="@{/budgets(page=${i})}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{/budgets(page=${currentPage + 1})}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+</main></body>
+</html>
