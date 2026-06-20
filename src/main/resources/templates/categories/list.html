@@ -11,7 +11,7 @@
         <thead class="table-light">
             <tr>
                 <th><a th:href="@{/categories(sortBy='name', sortDir=${sortBy=='name' ? reverseSortDir : 'asc'})}" class="text-dark text-decoration-none">Nume <i th:if="${sortBy=='name'}" th:class="${sortDir=='asc'?'bi bi-sort-up':'bi bi-sort-down'}"></i></a></th>
-                <th>Tip</th>
+                <th><a th:href="@{/categories(sortBy='type', sortDir=${sortBy=='type' ? reverseSortDir : 'asc'})}" class="text-dark text-decoration-none">Tip <i th:if="${sortBy=='type'}" th:class="${sortDir=='asc'?'bi bi-sort-up':'bi bi-sort-down'}"></i></a></th>
                 <th class="text-end">Actiuni</th>
             </tr>
         </thead>

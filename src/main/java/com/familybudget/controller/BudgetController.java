@@ -42,6 +42,8 @@ public class BudgetController {
         User user = userService.findByUsername(userDetails.getUsername());
         if (user.getFamily() == null) {
             model.addAttribute("warningMessage", "Nu esti asociat cu nicio familie.");
+            model.addAttribute("sortBy", sortBy);
+            model.addAttribute("sortDir", sortDir);
             return "budgets/list";
         }
 

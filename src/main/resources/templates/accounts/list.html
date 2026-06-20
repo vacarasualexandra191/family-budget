@@ -10,6 +10,20 @@
     </a>
 </div>
 
+    <div class="d-flex gap-2 mb-3">
+        <span class="text-muted small align-self-center">Sorteaza:</span>
+        <a th:href="@{/accounts(sortBy='name', sortDir=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
+           class="btn btn-sm" th:classappend="${sortBy == 'name' ? 'btn-primary' : 'btn-outline-secondary'}">
+            Nume
+            <i th:if="${sortBy == 'name'}" th:class="${sortDir == 'asc' ? 'bi bi-sort-alpha-down' : 'bi bi-sort-alpha-up'}"></i>
+        </a>
+        <a th:href="@{/accounts(sortBy='balance', sortDir=${sortBy == 'balance' ? reverseSortDir : 'desc'})}"
+           class="btn btn-sm" th:classappend="${sortBy == 'balance' ? 'btn-primary' : 'btn-outline-secondary'}">
+            Sold
+            <i th:if="${sortBy == 'balance'}" th:class="${sortDir == 'asc' ? 'bi bi-sort-numeric-down' : 'bi bi-sort-numeric-up'}"></i>
+        </a>
+    </div>
+
 <div class="row g-3" th:if="${accounts.totalElements > 0}">
     <div class="col-md-4" th:each="acc : ${accounts}">
         <div class="card border-0 shadow-sm h-100">

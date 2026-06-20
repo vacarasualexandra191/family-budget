@@ -21,3 +21,17 @@ logging:
     com.familybudget: DEBUG
     org.springframework.security: DEBUG
     org.hibernate.SQL: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans
+  endpoint:
+    health:
+      show-details: always
+  info:
+    app:
+      name: Family Budget App
+      version: 1.0.0
+      description: Aplicatie pentru gestionarea bugetului familial

@@ -3,6 +3,20 @@
       th:replace="~{layout :: layout(~{::main}, 'Bugete')}">
 <body><main>
 
+    <div class="d-flex gap-2 mb-3" th:if="${sortBy != null}">
+        <span class="text-muted small align-self-center">Sorteaza:</span>
+        <a th:href="@{/budgets(sortBy='year', sortDir=${sortBy == 'year' ? reverseSortDir : 'desc'})}"
+           class="btn btn-sm" th:classappend="${sortBy == 'year' ? 'btn-primary' : 'btn-outline-secondary'}">
+            An/Luna
+            <i th:if="${sortBy == 'year'}" th:class="${sortDir == 'asc' ? 'bi bi-sort-numeric-down' : 'bi bi-sort-numeric-up'}"></i>
+        </a>
+        <a th:href="@{/budgets(sortBy='limitAmount', sortDir=${sortBy == 'limitAmount' ? reverseSortDir : 'desc'})}"
+           class="btn btn-sm" th:classappend="${sortBy == 'limitAmount' ? 'btn-primary' : 'btn-outline-secondary'}">
+            Suma limita
+            <i th:if="${sortBy == 'limitAmount'}" th:class="${sortDir == 'asc' ? 'bi bi-sort-numeric-down' : 'bi bi-sort-numeric-up'}"></i>
+        </a>
+    </div>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-bar-chart me-2 text-primary"></i>Bugete</h2>
         <a th:href="@{/budgets/new}" class="btn btn-primary">
