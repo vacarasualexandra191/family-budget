@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, 'Asistent Financiar')}">
+<body><main>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-robot me-2 text-primary"></i>Asistent Financiar</h2>
+    </div>
+
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        Recomandarile de mai jos sunt generate automat pe baza analizei tranzactiilor si bugetelor
+        tale din luna curenta (<strong th:text="${user.fullName}">Utilizator</strong>).
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+            <h6 class="mb-0"><i class="bi bi-lightbulb me-2 text-warning"></i>Recomandari personalizate</h6>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" th:each="tip : ${advice}">
+                    <span th:text="${tip}">Recomandare</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-3 text-muted small">
+        <i class="bi bi-gear me-1"></i>
+        Motor de recomandari bazat pe analiza comportamentala a tranzactiilor (reguli financiare standard:
+        rata de economisire, depasiri de buget, categorii fara limita stabilita).
+    </div>
+
+</main></body>
+</html>

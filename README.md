@@ -47,7 +47,13 @@ aplicatie de gestionare a bugetului unei familii este esentiala pentru a asigura
 | `RecurringPayment` | Plată recurentă | 1→1 `Account` |
 
 ### Diagrama ER
-![Diagrama ER](docs/diagrama-er.png)
+![Diagrama ER](docs/er_diagram_oracle.png)
+
+## Tehnologii Utilizate
+
+### Limbaj și mediu de execuție
+- **Java 21 (JDK)** 
+- **Maven 3.8+** 
 
 ### Framework și persistență
 - **Spring Boot 3.3.4** — framework principal 
@@ -84,7 +90,16 @@ aplicatie de gestionare a bugetului unei familii este esentiala pentru a asigura
 - **Mockito** — mocking pentru teste unitare de service layer
 - **Spring Boot Test** (`@SpringBootTest`) — teste de integrare end-to-end
 - **AssertJ** — asserțiuni fluente în teste
+- ruleaza testele dovada 
 
+### Coduri de eroare
+
+| Cod | Cauză | Pagină afișată |
+|-----|-------|-----------------|
+| 404 | Resursă inexistentă (`ResourceNotFoundException`) | `error/404.html` |
+| 403 | Acces interzis pe baza rolului | `error/403.html` |
+| 409 | Conflict / resursă duplicată (`DuplicateResourceException`) | `error/generic.html` |
+| 500 | Eroare neașteptată | `error/500.html` |
 ### Structura Proiectului
 
 ```
@@ -111,4 +126,64 @@ src/
         └── integration/       # Integration tests end-to-end (H2)
 ```
 ---
+## Arhitectura Microservicii
+
+### Decompoziție — 3+ servicii independente
+
+| Serviciu | Port | Rol | Tehnologii |
+|----------|------|-----|------------|
+| **eureka-server** | 8761 | Service Registry — toate celelalte servicii se înregistrează și se descoperă prin el | Spring Cloud Netflix Eureka Server |
+| **user-service** | 8081 | Microserviciu independent pentru autentificare și gestionarea utilizatorilor (API REST) | Spring Boot, Spring Data JPA, Eureka Client |
+| **notification-service** | 8083 | Microserviciu independent pentru notificări (simulate) legate de evenimente financiare | Spring Boot, Eureka Client |
+| **family-budget-app** (monolit) | 8080 | Aplicația principală (toate entitățile de business) — înregistrată și ea în Eureka ca al 3-lea/4-lea serviciu vizibil | Spring Boot, Eureka Client + tot stack-ul descris mai sus 
+|
+**La pornirea simultană a celor 4 aplicații (eureka-server → user-service → notification-service → family-budget-app), dashboard-ul Eureka (`http://localhost:8761`) listează automat toate instanțele ca `UP`, fără nicio configurare manuală de rutare:
+![Diagrama ER](docs/eureka_services.png)
+
+### 2. API expus de microservicii independente
+
+**user-service** (`http://localhost:8081`)
+
+| Metodă | Endpoint | Descriere |
+|--------|----------|-----------|
+| GET | `/api/users` | Lista tuturor utilizatorilor (fără parole expuse) |
+| GET | `/api/users/{id}` | Detalii utilizator după ID |
+| GET | `/api/users/by-username/{username}` | Detalii utilizator după username |
+| POST | `/api/users/authenticate` | Verifică credențiale (username + password) și returnează datele utilizatorului |
+
+**notification-service** (`http://localhost:8083`)
+
+| Metodă | Endpoint | Descriere |
+|--------|----------|-----------|
+| POST | `/api/notifications` | Trimite (simulat, prin logging) o notificare către un utilizator |
+| GET | `/api/notifications/history` | Istoricul notificărilor trimise în sesiunea curentă |
+
+### Monitorizare (Actuator)
+
+| Metodă | Endpoint | Rol | Descriere |
+|--------|----------|-----|-----------|
+| GET | `/actuator/health` | Public | Status aplicație + DB |
+| GET | `/actuator/info` | Autentificat | Informații aplicație |
+| GET | `/actuator/metrics` | Autentificat | Metrici runtime JVM/HTTP |
+
+## CI/CD Pipeline
+
+Proiectul folosește **GitHub Actions** pentru integrare continuă, configurat în `.github/workflows/ci.yml`.
+
+### Ce face pipeline-ul
+
+La fiecare `push` sau `Pull Request` pe `main` sau `dev`, GitHub rulează automat, în cloud:
+
+1. **Checkout** cod sursă
+2. **Configurare JDK 21**
+3. **Build** complet cu Maven (`mvn clean compile`)
+4. **Rulare automată a tuturor testelor** (`mvn test`) — profilul `test`, izolat pe H2
+5. **Publicare rezultate teste** ca artefact descărcabil
+6. **Pachetare aplicație** într-un fișier `.jar`
+7. **Publicare artefact `.jar`** — gata de deployment
+
+- **Build automatizat** — fără pași manuali, fiecare commit e validat
+- **Rulare teste automate** — toate cele 14 teste rulează la fiecare push, fără ca dezvoltatorul să trebuiască să le ruleze manual local
+- **Deployment-ready artifact** — fiecare build de succes produce un `.jar` descărcabil, pregătit pentru staging/producție
+  Status-ul ultimei rulări poate fi verificat în tab-ul **Actions** al repository-ului: https://github.com/vacarasualexandra191/family-budget/actions
 
