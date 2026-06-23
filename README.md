@@ -140,7 +140,7 @@ src/
 | **family-budget-app** (monolit) | 8080 | Aplicația principală (toate entitățile de business) — înregistrată și ea în Eureka ca al 3-lea/4-lea serviciu vizibil | Spring Boot, Eureka Client + tot stack-ul descris mai sus 
 |
 **La pornirea simultană a celor 4 aplicații (eureka-server → user-service → notification-service → family-budget-app), dashboard-ul Eureka (`http://localhost:8761`) listează automat toate instanțele ca `UP`, fără nicio configurare manuală de rutare:
-![Diagrama ER](docs/eureka_services.png)
+![eureka](docs/eureka_services.png)
 
 ### 2. API expus de microservicii independente
 
@@ -188,4 +188,6 @@ La fiecare `push` sau `Pull Request` pe `main` sau `dev`, GitHub rulează automa
 - **Rulare teste automate** 
 - **Deployment-ready artifact** — fiecare build de succes produce un `.jar` descărcabil
   Status-ul ultimei rulări poate fi verificat în tab-ul **Actions** al repository-ului: https://github.com/vacarasualexandra191/family-budget/actions
+
+![CICD](docs/ci-cd.png)
 
