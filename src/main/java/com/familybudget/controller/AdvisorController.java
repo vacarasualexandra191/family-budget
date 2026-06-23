@@ -10,10 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/**
- * Expune pagina cu recomandari financiare generate automat ("AI Agent" runtime)
- * pe baza analizei tranzactiilor si bugetelor reale ale utilizatorului curent.
- */
+
 @Controller
 @RequiredArgsConstructor
 public class AdvisorController {

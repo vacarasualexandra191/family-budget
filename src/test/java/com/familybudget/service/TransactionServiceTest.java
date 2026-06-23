@@ -166,7 +166,6 @@ class TransactionServiceTest {
 
         transactionService.delete(5L);
 
-        // Soldul trebuie sa creasca inapoi cu 200 (reverse expense)
         assertThat(account.getBalance()).isEqualByComparingTo("1200.00");
         verify(transactionRepository).delete(existing);
     }

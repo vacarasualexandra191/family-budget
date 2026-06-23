@@ -88,9 +88,9 @@ aplicatie de gestionare a bugetului unei familii este esentiala pentru a asigura
 ### Testare
 - **JUnit 5** — framework de testare
 - **Mockito** — mocking pentru teste unitare de service layer
-- **Spring Boot Test** (`@SpringBootTest`) — teste de integrare end-to-end
-- **AssertJ** — asserțiuni fluente în teste
-- ruleaza testele dovada 
+- **Spring Boot Test** (`@SpringBootTest`) — Tests run: 14, Failures: 0, Errors: 0, Skipped: 0 - BUILD SUCCESS
+- **AssertJ**
+---
 
 ### Coduri de eroare
 
@@ -103,6 +103,8 @@ aplicatie de gestionare a bugetului unei familii este esentiala pentru a asigura
 ### Structura Proiectului
 
 ```
+
+
 src/
 ├── main/
 │   ├── java/com/familybudget/
@@ -182,8 +184,8 @@ La fiecare `push` sau `Pull Request` pe `main` sau `dev`, GitHub rulează automa
 6. **Pachetare aplicație** într-un fișier `.jar`
 7. **Publicare artefact `.jar`** — gata de deployment
 
-- **Build automatizat** — fără pași manuali, fiecare commit e validat
-- **Rulare teste automate** — toate cele 14 teste rulează la fiecare push, fără ca dezvoltatorul să trebuiască să le ruleze manual local
-- **Deployment-ready artifact** — fiecare build de succes produce un `.jar` descărcabil, pregătit pentru staging/producție
+- **Build automatizat** 
+- **Rulare teste automate** 
+- **Deployment-ready artifact** — fiecare build de succes produce un `.jar` descărcabil
   Status-ul ultimei rulări poate fi verificat în tab-ul **Actions** al repository-ului: https://github.com/vacarasualexandra191/family-budget/actions
 

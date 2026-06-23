@@ -43,7 +43,6 @@ class FamilyBudgetIntegrationTest {
             roleRepository.save(new Role("ROLE_ADMIN"));
         }
 
-        // Creeaza categorie direct
         expenseCategory = new Category();
         expenseCategory.setName("Mancare_" + System.currentTimeMillis());
         expenseCategory.setType(Category.CategoryType.EXPENSE);
