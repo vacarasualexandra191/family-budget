@@ -90,7 +90,22 @@ aplicatie de gestionare a bugetului unei familii este esentiala pentru a asigura
 - **Mockito** — mocking pentru teste unitare de service layer
 - **Spring Boot Test** (`@SpringBootTest`) — Tests run: 14, Failures: 0, Errors: 0, Skipped: 0 - BUILD SUCCESS
 - **AssertJ**
----
+```
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.197 s -- in com.familybudget.service.TransactionServiceTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+```
+
+### Multi-environment
+Două profile Spring complet separate:
+- **`dev`** → Oracle XE, `ddl-auto: update`, logging DEBUG
+- **`test`** → H2 in-memory, `ddl-auto: create-drop`, logging INFO
 
 ### Coduri de eroare
 
@@ -108,17 +123,17 @@ aplicatie de gestionare a bugetului unei familii este esentiala pentru a asigura
 src/
 ├── main/
 │   ├── java/com/familybudget/
-│   │   ├── controller/      # Controllere MVC 
+│   │   ├── controller/      #  MVC 
 │   │   ├── dto/              # DTO-uri pentru formulare (cu validare Bean Validation)
 │   │   ├── entity/            # 8 entități JPA
 │   │   ├── exception/        # Excepții custom + GlobalExceptionHandler centralizat
 │   │   ├── repository/       # Spring Data JPA repositories (cu Pageable + Sort)
 │   │   ├── security/         # SecurityConfig (JDBC auth, BCrypt, roluri)
-│   │   └── service/          # Interfețe + implementări (logică de business)
+│   │   └── service/          # logică de business
 │   └── resources/
-│       ├── templates/        # Thymeleaf (layout + pagini per entitate + erori custom)
-│       ├── static/           # CSS, JS
-│       ├── application.yml          # Config comună
+│       ├── templates/        
+│       ├── static/           
+│       ├── application.yml          
 │       ├── application-dev.yml      # Profil Oracle (dezvoltare)
 │       ├── application-test.yml     # Profil H2 (testare)
 │       └── logback-spring.xml       # Configurare logging
@@ -172,17 +187,7 @@ src/
 
 Proiectul folosește **GitHub Actions** pentru integrare continuă, configurat în `.github/workflows/ci.yml`.
 
-### Ce face pipeline-ul
-
 La fiecare `push` sau `Pull Request` pe `main` sau `dev`, GitHub rulează automat, în cloud:
-
-1. **Checkout** cod sursă
-2. **Configurare JDK 21**
-3. **Build** complet cu Maven (`mvn clean compile`)
-4. **Rulare automată a tuturor testelor** (`mvn test`) — profilul `test`, izolat pe H2
-5. **Publicare rezultate teste** ca artefact descărcabil
-6. **Pachetare aplicație** într-un fișier `.jar`
-7. **Publicare artefact `.jar`** — gata de deployment
 
 - **Build automatizat** 
 - **Rulare teste automate** 
@@ -191,3 +196,12 @@ La fiecare `push` sau `Pull Request` pe `main` sau `dev`, GitHub rulează automa
 
 ![CICD](docs/ci-cd.png)
 
+## AI Agents
+
+Aplicația include o funcționalitate AI integrată la runtime, vizibilă utilizatorului final: **Asistentul Financiar** (`/advisor`).
+Un motor de recomandări personalizate care analizează în timp real tranzacțiile și bugetele reale ale utilizatorului autentificat și generează sfaturi financiare automate, similar unui agent de analiză comportamentală:
+- **Detectare deficit** — avertizează când cheltuielile lunii curente depașesc veniturile
+- **Analiza ratei de economisire** — compară cu reperul standard de 20% recomandat de specialiști financiari
+- **Categorii fără buget** — identifică automat categoriile cu cheltuieli semnificative (>50 RON) care nu au un buget lunar definit
+- **Alerte de prag de buget** — semnalează bugetele depășite (100%+) sau aproape consumate (≥85%)
+- **Feedback pozitiv** — confirmă când situația financiară e echilibrată, fără alerte negative

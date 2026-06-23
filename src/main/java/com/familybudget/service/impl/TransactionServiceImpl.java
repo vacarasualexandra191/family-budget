@@ -32,6 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountRepository accountRepository;
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
+    private final NotificationClientService notificationClientService;
 
     @Override
     public Page<Transaction> findAllForUser(String username, Pageable pageable) {
@@ -74,6 +75,25 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction saved = transactionRepository.save(transaction);
         log.info("Tranzactie creata: id={}, suma={}, cont={}, categorie={}",
                 saved.getId(), saved.getAmount(), account.getId(), category.getName());
+
+
+        if (account.getBalance().signum() < 0) {
+            notificationClientService.notify(
+                    username,
+                    "NEGATIVE_BALANCE_ALERT",
+                    String.format("Contul '%s' are sold negativ (%.2f %s) dupa tranzactia '%s'.",
+                            account.getName(), account.getBalance(), account.getCurrency(),
+                            category.getName())
+            );
+        } else {
+            notificationClientService.notify(
+                    username,
+                    "TRANSACTION_CONFIRMATION",
+                    String.format("Tranzactie inregistrata: %.2f RON pe categoria '%s'.",
+                            saved.getAmount(), category.getName())
+            );
+        }
+
         return saved;
     }
 

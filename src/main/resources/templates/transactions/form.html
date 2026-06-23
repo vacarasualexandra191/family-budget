@@ -3,126 +3,202 @@
       th:replace="~{layout :: layout(~{::main}, 'Tranzactie')}">
 <body><main>
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">
-                    <i class="bi bi-arrow-left-right me-2 text-primary"></i>
-                    <span th:text="${transactionForm.id != null ? 'Editeaza tranzactia' : 'Tranzactie noua'}">Tranzactie</span>
-                </h5>
-            </div>
-            <div class="card-body">
-                <form th:action="${transactionForm.id != null ? '/transactions/' + transactionForm.id + '/edit' : '/transactions/new'}"
-                      method="post" th:object="${transactionForm}" novalidate class="needs-validation">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-arrow-left-right me-2 text-primary"></i>
+                        <span th:text="${transactionForm.id != null ? 'Editeaza tranzactia' : 'Tranzactie noua'}">Tranzactie</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="${transactionForm.id != null ? '/transactions/' + transactionForm.id + '/edit' : '/transactions/new'}"
+                          method="post" th:object="${transactionForm}" novalidate class="needs-validation">
 
-                    <div class="mb-3">
-                        <label class="form-label">Suma (RON) *</label>
-                        <input type="number" step="0.01" min="0.01"
-                               th:field="*{amount}"
-                               th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid'"
-                               class="form-control" placeholder="0.00" required/>
-                        <div class="invalid-feedback" th:errors="*{amount}">Suma invalida</div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Suma (RON) *</label>
+                            <input type="number" step="0.01" min="0.01" id="amountInput"
+                                   th:field="*{amount}"
+                                   th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid'"
+                                   class="form-control" placeholder="0.00" required/>
+                            <div class="invalid-feedback" th:errors="*{amount}">Suma invalida</div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Data *</label>
-                        <input type="date"
-                               th:field="*{transactionDate}"
-                               th:classappend="${#fields.hasErrors('transactionDate')} ? 'is-invalid'"
-                               class="form-control" required/>
-                        <div class="invalid-feedback" th:errors="*{transactionDate}">Data invalida</div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Data *</label>
+                            <input type="date"
+                                   th:field="*{transactionDate}"
+                                   th:classappend="${#fields.hasErrors('transactionDate')} ? 'is-invalid'"
+                                   class="form-control" required/>
+                            <div class="invalid-feedback" th:errors="*{transactionDate}">Data invalida</div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Cont *</label>
-                        <select th:field="*{accountId}"
-                                th:classappend="${#fields.hasErrors('accountId')} ? 'is-invalid'"
-                                class="form-select" required>
-                            <option value="">-- Selecteaza contul --</option>
-                            <option th:each="acc : ${accounts}"
-                                    th:value="${acc.id}"
-                                    th:text="${acc.name + ' (' + acc.currency + ')'}">
-                            </option>
-                        </select>
-                        <div class="invalid-feedback" th:errors="*{accountId}">Selecteaza un cont</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Categorie *</label>
-                        <select th:field="*{categoryId}"
-                                th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'"
-                                class="form-select" required>
-                            <option value="">-- Selecteaza categoria --</option>
-                            <optgroup label="Venituri">
-                                <option th:each="cat : ${categories}"
-                                        th:if="${cat.type.name() == 'INCOME'}"
-                                        th:value="${cat.id}"
-                                        th:text="${cat.name}">
+                        <div class="mb-3">
+                            <label class="form-label">Cont *</label>
+                            <select th:field="*{accountId}" id="accountSelect"
+                                    th:classappend="${#fields.hasErrors('accountId')} ? 'is-invalid'"
+                                    class="form-select" required>
+                                <option value="">-- Selecteaza contul --</option>
+                                <option th:each="acc : ${accounts}"
+                                        th:value="${acc.id}"
+                                        th:attr="data-balance=${acc.balance}"
+                                        th:text="${acc.name + ' (' + acc.currency + ') - sold: ' + #numbers.formatDecimal(acc.balance, 1, 2) + ' ' + acc.currency}">
                                 </option>
-                            </optgroup>
-                            <optgroup label="Cheltuieli">
-                                <option th:each="cat : ${categories}"
-                                        th:if="${cat.type.name() == 'EXPENSE'}"
-                                        th:value="${cat.id}"
-                                        th:text="${cat.name}">
-                                </option>
-                            </optgroup>
-                        </select>
-                        <div class="invalid-feedback" th:errors="*{categoryId}">Selecteaza o categorie</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Descriere</label>
-                        <input type="text" th:field="*{description}"
-                               class="form-control" placeholder="ex: Cumparaturi Kaufland"/>
-                    </div>
-
-                    <div class="mb-4" th:if="${!#lists.isEmpty(tags)}">
-                        <label class="form-label">Taguri</label>
-                        <div class="d-flex flex-wrap gap-2">
-                            <div th:each="tag : ${tags}" class="form-check form-check-inline">
-                                <input type="checkbox" class="form-check-input"
-                                       th:id="'tag-' + ${tag.id}"
-                                       name="tagIds"
-                                       th:value="${tag.id}"
-                                       th:checked="${transactionForm.tagIds != null and transactionForm.tagIds.contains(tag.id)}"/>
-                                <label class="form-check-label" th:for="'tag-' + ${tag.id}"
-                                       th:text="${tag.name}">tag</label>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{accountId}">Selecteaza un cont</div>
+                            <div id="balanceWarning" class="alert alert-warning mt-2 d-none">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <span id="balanceWarningText"></span>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-lg me-1"></i>Salveaza
-                        </button>
-                        <a th:href="@{/transactions}" class="btn btn-outline-secondary">
-                            <i class="bi bi-x-lg me-1"></i>Anuleaza
-                        </a>
-                    </div>
-                </form>
+                        <div class="mb-3">
+                            <label class="form-label">Categorie *</label>
+                            <select th:field="*{categoryId}" id="categorySelect"
+                                    th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'"
+                                    class="form-select" required>
+                                <option value="">-- Selecteaza categoria --</option>
+                                <optgroup label="Venituri">
+                                    <option th:each="cat : ${categories}"
+                                            th:if="${cat.type.name() == 'INCOME'}"
+                                            th:value="${cat.id}"
+                                            data-type="INCOME"
+                                            th:text="${cat.name}">
+                                    </option>
+                                </optgroup>
+                                <optgroup label="Cheltuieli">
+                                    <option th:each="cat : ${categories}"
+                                            th:if="${cat.type.name() == 'EXPENSE'}"
+                                            th:value="${cat.id}"
+                                            data-type="EXPENSE"
+                                            th:text="${cat.name}">
+                                    </option>
+                                </optgroup>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{categoryId}">Selecteaza o categorie</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descriere</label>
+                            <input type="text" th:field="*{description}"
+                                   class="form-control" placeholder="ex: Cumparaturi Kaufland"/>
+                        </div>
+
+                        <div class="mb-4" th:if="${!#lists.isEmpty(tags)}">
+                            <label class="form-label">Taguri</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <div th:each="tag : ${tags}" class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input"
+                                           th:id="'tag-' + ${tag.id}"
+                                           name="tagIds"
+                                           th:value="${tag.id}"
+                                           th:checked="${transactionForm.tagIds != null and transactionForm.tagIds.contains(tag.id)}"/>
+                                    <label class="form-check-label" th:for="'tag-' + ${tag.id}"
+                                           th:text="${tag.name}">tag</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Salveaza
+                            </button>
+                            <a th:href="@{/transactions}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg me-1"></i>Anuleaza
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-// Validare client-side Bootstrap
-(function() {
-    'use strict';
-    var forms = document.querySelectorAll('.needs-validation');
-    Array.from(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
+    <script>
+        (function() {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+
+
+        (function() {
+            'use strict';
+            var accountSelect = document.getElementById('accountSelect');
+            var categorySelect = document.getElementById('categorySelect');
+            var amountInput = document.getElementById('amountInput');
+            var warningBox = document.getElementById('balanceWarning');
+            var warningText = document.getElementById('balanceWarningText');
+            var form = document.querySelector('.needs-validation');
+
+            function isExpenseCategory() {
+                var opt = categorySelect.options[categorySelect.selectedIndex];
+                return opt && opt.getAttribute('data-type') === 'EXPENSE';
             }
-            form.classList.add('was-validated');
-        }, false);
-    });
-})();
-</script>
+
+            function getSelectedBalance() {
+                var opt = accountSelect.options[accountSelect.selectedIndex];
+                var raw = opt ? opt.getAttribute('data-balance') : null;
+                return raw !== null ? parseFloat(raw) : null;
+            }
+
+            function checkBalance() {
+                var balance = getSelectedBalance();
+                var amount = parseFloat(amountInput.value);
+
+                if (balance === null || isNaN(amount) || amount <= 0 || !isExpenseCategory()) {
+                    warningBox.classList.add('d-none');
+                    return false;
+                }
+
+                if (amount > balance) {
+                    warningText.textContent =
+                        'Suma introdusa (' + amount.toFixed(2) + ' RON) este mai mare decat soldul disponibil ' +
+                        'al contului selectat (' + balance.toFixed(2) + ' RON). Tranzactia poate fi salvata in continuare, ' +
+                        'dar soldul contului va deveni negativ.';
+                    warningBox.classList.remove('d-none');
+                    return true;
+                } else {
+                    warningBox.classList.add('d-none');
+                    return false;
+                }
+            }
+
+            accountSelect.addEventListener('change', checkBalance);
+            categorySelect.addEventListener('change', checkBalance);
+            amountInput.addEventListener('input', checkBalance);
+
+
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    return;
+                }
+                var exceedsBalance = checkBalance();
+                if (exceedsBalance) {
+                    var balance = getSelectedBalance();
+                    var amount = parseFloat(amountInput.value);
+                    var confirmed = window.confirm(
+                        'Atentie! Suma introdusa (' + amount.toFixed(2) + ' RON) este mai mare decat soldul ' +
+                        'disponibil (' + balance.toFixed(2) + ' RON).\n\n' +
+                        'Soldul contului va deveni negativ daca continui.\n\n' +
+                        'Vrei sa salvezi totusi aceasta tranzactie?'
+                    );
+                    if (!confirmed) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                }
+            }, false);
+        })();
+    </script>
 
 </main></body>
 </html>
