@@ -7,6 +7,7 @@ import com.familybudget.repository.AccountRepository;
 import com.familybudget.repository.CategoryRepository;
 import com.familybudget.repository.TagRepository;
 import com.familybudget.repository.TransactionRepository;
+import com.familybudget.service.impl.NotificationClientService;
 import com.familybudget.service.impl.TransactionServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +35,7 @@ class TransactionServiceTest {
     @Mock AccountRepository accountRepository;
     @Mock CategoryRepository categoryRepository;
     @Mock TagRepository tagRepository;
+    @Mock NotificationClientService notificationClientService;
 
     @InjectMocks TransactionServiceImpl transactionService;
 

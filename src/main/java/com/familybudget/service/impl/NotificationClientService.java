@@ -26,7 +26,7 @@ public class NotificationClientService {
             );
             restTemplate.postForObject(NOTIFICATION_SERVICE_URL, payload, Map.class);
             log.info("Notificare trimisa cu succes catre notification-service: tip={}, destinatar={}", type, recipientUsername);
-        } catch (RestClientException ex) {
+        } catch (RestClientException | IllegalStateException ex) {
             log.warn("Nu s-a putut trimite notificarea (notification-service indisponibil): {}", ex.getMessage());
         }
     }
